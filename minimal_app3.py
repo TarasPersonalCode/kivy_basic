@@ -5,6 +5,9 @@ from kivy.uix.label  import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.widget  import Widget
 
+from kivy.config import Config
+Config.set('graphics', 'resizable', True)
+
 class CountLabel(Label):
     def __init__(self, **kwargs):
         super(CountLabel, self).__init__(**kwargs)
@@ -16,24 +19,23 @@ class CountLabel(Label):
         self.update_text()
 
     def update_text(self):
-        self.text = f'count: {self.count}'
+        self.text = f'default'
 
 class MyCounterApp(App):
     def build(self):
-        parent = Widget()
-        grid = GridLayout(cols=1)
+        grid = GridLayout()
+        grid.cols = 1
         self.count_label = CountLabel()
-        text_input  = TextInput(multiline=False)
-        button      = Button(text="Increase count by 1")
+        self.text_input  = TextInput(multiline=False)
+        button      = Button(text="set label.text to input.text")
         button.bind(on_press=self.button_callback)
         grid.add_widget(self.count_label)
-        grid.add_widget(text_input)
+        grid.add_widget(self.text_input)
         grid.add_widget(button)
-        parent.add_widget(grid)
-        return parent
+        return grid 
 
     def button_callback(self, obj):
-        self.count_label.increase_count()
+        self.count_label.text = self.text_input.text
 
 if __name__ == "__main__":
     MyCounterApp().run()
