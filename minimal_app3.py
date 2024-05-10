@@ -8,24 +8,12 @@ from kivy.uix.widget  import Widget
 from kivy.config import Config
 Config.set('graphics', 'resizable', True)
 
-class CountLabel(Label):
-    def __init__(self, **kwargs):
-        super(CountLabel, self).__init__(**kwargs)
-        self.count = 0
-        self.update_text()
-
-    def increase_count(self):
-        self.count += 1
-        self.update_text()
-
-    def update_text(self):
-        self.text = f'default'
 
 class MyCounterApp(App):
     def build(self):
         grid = GridLayout()
         grid.cols = 1
-        self.count_label = CountLabel()
+        self.count_label = Label(text='default')
         self.text_input  = TextInput(multiline=False)
         button      = Button(text="set label.text to input.text")
         button.bind(on_press=self.button_callback)
