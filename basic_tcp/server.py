@@ -1,20 +1,16 @@
+import argparse
 import socket
 import threading
 
 from os import urandom
-
-from utils2 import bf_decrypt
-
-IP = '0.0.0.0'
-PORT = 9998
-
+ 
 BUFF_SIZE = 16
 
-def main():
+def main(ip, port):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((IP, PORT))
+    server.bind((ip, port))
     server.listen(5)
-    print(f'[*] Listening on {IP}:{PORT}')
+    print(f'[*] Listening on {ip}:{port}')
     while True:
         client, address = server.accept()
         print(f'[*] Accepted connection from {address[0]}: {address[1]})')
@@ -29,5 +25,9 @@ def handle_client(client_socket):
             print(f'[*] Received: {data} of length {len(data)}')
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ip',   type=str, required=True)
+    parser.add_argument('--port', type=int, required=True)
+    args = parser.parse_args()
+    main(args.ip, args.port)
 
