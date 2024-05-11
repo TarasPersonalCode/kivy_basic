@@ -1,2 +1,4 @@
 .buildozer/
 bin/
+adb_logcat/
+main.py
