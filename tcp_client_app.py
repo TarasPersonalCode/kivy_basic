@@ -29,6 +29,7 @@ BUFF_SIZE = 16
 class MyCounterApp(App):
     def build(self):
         Logger.info("lalala amznsdf3")
+        Logger.info("lalala amznsdf3 api_version: " + str(api_version))
         Logger.debug("lalala amznsdf4")
         self.data_dir = self.user_data_dir
         root_widget = self.build_root_widget()
