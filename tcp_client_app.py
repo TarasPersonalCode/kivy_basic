@@ -21,9 +21,14 @@ BUFF_SIZE = 16
 
 class MyCounterApp(App):
     def build(self):
+        self.data_dir = self.user_data_dir
+        root_widget = self.build_root_widget()
+        return root_widget
+
+    def build_root_widget(self):
         grid = GridLayout()
         grid.cols = 1
-        self.info_label = Label(text='enter IP:PORT in the window below')
+        self.info_label = Label(text=f'enter IP:PORT in the window below\ndata_dir = {self.data_dir}')
         self.text_input  = TextInput(multiline=False)
         button      = Button(text="send random bytes")
         button.bind(on_press=self.button_callback)
@@ -33,12 +38,20 @@ class MyCounterApp(App):
         return grid 
 
     def button_callback(self, obj):
+        self.send_random_bytestring(obj)
+        self.write_random_file(obj)
+
+    def send_random_bytestring(self, obj):
         client = socket.socket()
         IP, PORT = self.text_input.text.split(':')
         client.connect((str(IP), int(PORT)))
         byte = urandom(BUFF_SIZE)
         client.send(byte)
         client.close()
-    
+
+    def write_random_file(self, obj):
+        with open(f'{self.data_dir}/text.txt', 'w') as f:
+            f.write('Hello world!')
+
 if __name__ == "__main__":
     MyCounterApp().run()
