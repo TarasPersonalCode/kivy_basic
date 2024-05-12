@@ -43,27 +43,30 @@ class MyCounterApp(App):
         grid = GridLayout()
         grid.cols = 1
         self.info_label = Label(text=f'enter IP:PORT in the window below\ndata_dir = {self.data_dir}')
-        self.text_input  = TextInput(multiline=False, text='146.168.100.42:16771')
-        button      = Button(text="send random bytes")
+        self.ip_input       = TextInput(multiline=False, text='146.168.100.42:16771')
+        self.request_input  = TextInput(multiline=False, text='Farewell to Erin - Mandolin and Bodhrán')
+        button      = Button(text="process video")
         button.bind(on_press=self.button_callback)
         grid.add_widget(self.info_label)
-        grid.add_widget(self.text_input)
+        grid.add_widget(self.ip_input)
+        grid.add_widget(self.request_input)
         grid.add_widget(button)
         return grid 
 
     def button_callback(self, obj):
         Logger.info( "kivyyvik: button_push1")
         Logger.debug("kivyyvik: button_push2")
-        self.send_random_bytestring(obj)
+        self.send_request(obj)
         self.write_random_file(obj)
         self.read_file(obj)
 
-    def send_random_bytestring(self, obj):
+    def send_request(self, obj):
         client = socket.socket()
-        IP, PORT = self.text_input.text.split(':')
+        IP, PORT = self.ip_input.text.split(':')
         client.connect((str(IP), int(PORT)))
         nm = NetworkManager(client, BUFF_SIZE)
-        nm.send(("lalalo;", {'my': 'face', 1: 2}))
+        nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
+        self.info_label.text += '\n' + str(nm.recv())
         # nm.send("lalalo;")
         nm.close()
 

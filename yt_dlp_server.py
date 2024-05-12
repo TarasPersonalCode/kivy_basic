@@ -5,8 +5,10 @@ import threading
 from os import urandom
  
 from network_.manager import NetworkManager
+from ytdlp.helper import process_query 
 
 BUFF_SIZE = 16
+OUTPUT_DIR = '/home/steganopus/Documents/TAoS/misc/20220814/server_client_kivy/kivy/media' 
 
 def main(ip, port):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,6 +25,8 @@ class YtDlpHandler(NetworkManager):
     def run(self):
         # data = self.recv()
         data = self.recv()
+        process_query(data['query'], data['add_video'], data['high_quality'], OUTPUT_DIR)
+        self.send('Get ready to receive')
         print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
     
     @staticmethod
