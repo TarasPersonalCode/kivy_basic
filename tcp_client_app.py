@@ -17,6 +17,7 @@ from kivy.utils import platform
 if platform == 'android':
     from androidstorage4kivy import SharedStorage
     from android import api_version
+    from android import mActivity, autoclass
 
 from kivy.config import Config
 Config.set('graphics', 'resizable', True)
@@ -30,6 +31,7 @@ class MyCounterApp(App):
     def build(self):
         Logger.info("lalala amznsdf3")
         Logger.info("lalala amznsdf3 api_version: " + str(api_version))
+        Logger.info("lalala amznsdf3 application_dir: " + str(mActivity.getApplicationContext().getApplicationInfo().dataDir))
         Logger.debug("lalala amznsdf4")
         self.data_dir = self.user_data_dir
         root_widget = self.build_root_widget()
