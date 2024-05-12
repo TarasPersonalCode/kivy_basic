@@ -21,10 +21,9 @@ def main(ip, port):
 
 class YtDlpHandler(NetworkManager):
     def run(self):
-        data = self.rec()
-        while len(data) > 0:
-            print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
-            data = self.recv()
+        # data = self.recv()
+        data = self.recv()
+        print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
     
     @staticmethod
     def make_handler_and_run(sock, buff_size):

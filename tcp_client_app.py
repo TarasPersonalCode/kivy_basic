@@ -64,6 +64,7 @@ class MyCounterApp(App):
         client.connect((str(IP), int(PORT)))
         nm = NetworkManager(client, BUFF_SIZE)
         nm.send(("lalalo;", {'my': 'face', 1: 2}))
+        # nm.send("lalalo;")
         nm.close()
 
     def write_random_file(self, obj):
