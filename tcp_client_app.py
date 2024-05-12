@@ -43,7 +43,7 @@ class MyCounterApp(App):
         grid = GridLayout()
         grid.cols = 1
         self.info_label = Label(text=f'enter IP:PORT in the window below\ndata_dir = {self.data_dir}')
-        self.text_input  = TextInput(multiline=False)
+        self.text_input  = TextInput(multiline=False, text='146.168.100.42:16771')
         button      = Button(text="send random bytes")
         button.bind(on_press=self.button_callback)
         grid.add_widget(self.info_label)
@@ -63,7 +63,7 @@ class MyCounterApp(App):
         IP, PORT = self.text_input.text.split(':')
         client.connect((str(IP), int(PORT)))
         nm = NetworkManager(client, BUFF_SIZE)
-        nm.send_string_w_size("lalalo; {'my': 'face', 1: 2}")
+        nm.send(("lalalo;", {'my': 'face', 1: 2}))
         nm.close()
 
     def write_random_file(self, obj):
