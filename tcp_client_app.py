@@ -64,9 +64,7 @@ class MyCounterApp(App):
         client.connect((str(IP), int(PORT)))
         nm = NetworkManager(client, BUFF_SIZE)
         nm.send_string_w_size("lalalo; {'my': 'face', 1: 2}")
-        # byte = urandom(BUFF_SIZE)
-        # client.send(byte)
-        # client.close()
+        nm.close()
 
     def write_random_file(self, obj):
         pathlib.Path(self.data_dir).mkdir(parents=True, exist_ok=True)
