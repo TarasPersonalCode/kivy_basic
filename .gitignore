@@ -1,4 +1,5 @@
 .buildozer/
 bin/
 adb_logcat/
+media/
 main.py
