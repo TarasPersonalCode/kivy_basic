@@ -12,17 +12,25 @@ def main(ip, port):
     server.listen(5)
     print(f'[*] Listening on {ip}:{port}')
     while True:
-        client, address = server.accept()
+        sock, address = server.accept()
         print(f'[*] Accepted connection from {address[0]}: {address[1]})')
-        client_handler = threading.Thread (target = handle_client, args = (client,))
-        client_handler.start()
+        threading.Thread(target=YtDlpHandler.make_handler_and_run, args=(sock,)).start()
 
-def handle_client(client_socket):
-    with client_socket as sock:
+
+class YtDlpHandler:
+    def __init__(self, client_socket):
+        self.sock = client_socket
+
+    def run(self):
         data = urandom(BUFF_SIZE) 
         while len(data) == BUFF_SIZE:
-            data = sock.recv(BUFF_SIZE)
+            data = self.sock.recv(BUFF_SIZE)
             print(f'[*] Received: {data} of length {len(data)}')
+        
+    @staticmethod
+    def make_handler_and_run(sock):
+        handler = YtDlpHandler(sock)
+        handler.run()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
