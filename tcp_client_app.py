@@ -14,6 +14,8 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.widget  import Widget
 from kivy.utils import platform
 
+from network_.manager import NetworkManager
+
 if platform == 'android':
     from androidstorage4kivy import SharedStorage
     from android import api_version
@@ -30,8 +32,8 @@ BUFF_SIZE = 16
 class MyCounterApp(App):
     def build(self):
         Logger.info("lalala amznsdf3")
-        Logger.info("lalala amznsdf3 api_version: " + str(api_version))
-        Logger.info("lalala amznsdf3 application_dir: " + str(mActivity.getApplicationContext().getApplicationInfo().dataDir))
+        # Logger.info("lalala amznsdf3 api_version: " + str(api_version))
+        # Logger.info("lalala amznsdf3 application_dir: " + str(mActivity.getApplicationContext().getApplicationInfo().dataDir))
         Logger.debug("lalala amznsdf4")
         self.data_dir = self.user_data_dir
         root_widget = self.build_root_widget()
@@ -60,9 +62,11 @@ class MyCounterApp(App):
         client = socket.socket()
         IP, PORT = self.text_input.text.split(':')
         client.connect((str(IP), int(PORT)))
-        byte = urandom(BUFF_SIZE)
-        client.send(byte)
-        client.close()
+        nm = NetworkManager(client, BUFF_SIZE)
+        nm.send_string_w_size("lalalo; {'my': 'face', 1: 2}")
+        # byte = urandom(BUFF_SIZE)
+        # client.send(byte)
+        # client.close()
 
     def write_random_file(self, obj):
         pathlib.Path(self.data_dir).mkdir(parents=True, exist_ok=True)

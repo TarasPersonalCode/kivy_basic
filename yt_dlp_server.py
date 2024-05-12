@@ -4,7 +4,7 @@ import threading
 
 from os import urandom
  
-from network.manager import NetworkManager
+from network_.manager import NetworkManager
 
 BUFF_SIZE = 16
 
@@ -21,10 +21,10 @@ def main(ip, port):
 
 class YtDlpHandler(NetworkManager):
     def run(self):
-        data = self.sock.recv(self.buff_size)
+        data = self.recv_string_w_size()
         while len(data) > 0:
             print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
-            data = self.sock.recv(self.buff_size)
+            data = self.recv_string_w_size()
     
     @staticmethod
     def make_handler_and_run(sock, buff_size):

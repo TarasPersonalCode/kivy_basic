@@ -26,4 +26,6 @@ class NetworkManager:
         self.send_int(outbound_size)
         for chunk in range(0, outbound_size, self.buff_size):
             self.sock.send(outbound_msg[chunk:chunk+self.buff_size])
-  
+ 
+    def close(self):
+        self.sock.close()
