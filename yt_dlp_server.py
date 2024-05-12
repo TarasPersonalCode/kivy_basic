@@ -22,10 +22,10 @@ class YtDlpHandler:
         self.sock = client_socket
 
     def run(self):
-        data = urandom(BUFF_SIZE) 
-        while len(data) == BUFF_SIZE:
+        data = self.sock.recv(BUFF_SIZE)
+        while len(data) > 0:
+            print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
             data = self.sock.recv(BUFF_SIZE)
-            print(f'[*] Received: {data} of length {len(data)}')
         
     @staticmethod
     def make_handler_and_run(sock):
