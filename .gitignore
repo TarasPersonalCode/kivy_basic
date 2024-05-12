@@ -3,3 +3,5 @@ bin/
 adb_logcat/
 media/
 main.py
+*swp
+*__pycache__*
