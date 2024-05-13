@@ -57,8 +57,11 @@ class MyCounterApp(App):
         Logger.info( "kivyyvik: button_push1")
         Logger.debug("kivyyvik: button_push2")
         self.send_request(obj)
+        print(1)
         self.write_random_file(obj)
+        print(2)
         self.read_file(obj)
+        print(3)
 
     def send_request(self, obj):
         client = socket.socket()
@@ -66,7 +69,12 @@ class MyCounterApp(App):
         client.connect((str(IP), int(PORT)))
         nm = NetworkManager(client, BUFF_SIZE)
         nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
-        self.info_label.text += '\n' + str(nm.recv())
+        nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
+        video_meta = nm.recv()
+        video_meta = nm.recv()
+        self.info_label.text += '\n' + video_meta['filename']
+        # nm.file_receive(f'{self.data_dir}/{video_meta["filename"]}')
+        # breakpoint()
         # nm.send("lalalo;")
         nm.close()
 

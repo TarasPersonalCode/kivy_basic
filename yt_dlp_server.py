@@ -23,12 +23,18 @@ def main(ip, port):
 
 class YtDlpHandler(NetworkManager):
     def run(self):
-        # data = self.recv()
-        data = self.recv()
-        process_query(data['query'], data['add_video'], data['high_quality'], OUTPUT_DIR)
-        self.send('Get ready to receive')
-        print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
-    
+        try:
+            # data = self.recv()
+            data = self.recv()
+            data = self.recv()
+            filename = process_query(data['query'], data['add_video'], data['high_quality'], OUTPUT_DIR)
+            self.send({'filename': filename})
+            self.send({'filename': filename})
+            # self.file_send(f'{OUTPUT_DIR}/{filename}')
+            print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
+        except Exception as e:
+            print(e)
+
     @staticmethod
     def make_handler_and_run(sock, buff_size):
         handler = YtDlpHandler(sock, buff_size)
