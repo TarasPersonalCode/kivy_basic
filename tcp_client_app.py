@@ -27,14 +27,10 @@ Config.set('graphics', 'resizable', True)
 IP = '146.168.100.42'
 PORT = 16770
 
-BUFF_SIZE = 16
+BUFF_SIZE = 4096
 
 class MyCounterApp(App):
     def build(self):
-        Logger.info("lalala amznsdf3")
-        # Logger.info("lalala amznsdf3 api_version: " + str(api_version))
-        # Logger.info("lalala amznsdf3 application_dir: " + str(mActivity.getApplicationContext().getApplicationInfo().dataDir))
-        Logger.debug("lalala amznsdf4")
         self.data_dir = self.user_data_dir
         root_widget = self.build_root_widget()
         return root_widget
@@ -54,14 +50,9 @@ class MyCounterApp(App):
         return grid 
 
     def button_callback(self, obj):
-        Logger.info( "kivyyvik: button_push1")
-        Logger.debug("kivyyvik: button_push2")
         self.send_request(obj)
-        print(1)
         self.write_random_file(obj)
-        print(2)
         self.read_file(obj)
-        print(3)
 
     def send_request(self, obj):
         client = socket.socket()
@@ -69,13 +60,9 @@ class MyCounterApp(App):
         client.connect((str(IP), int(PORT)))
         nm = NetworkManager(client, BUFF_SIZE)
         nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
-        nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
-        video_meta = nm.recv()
         video_meta = nm.recv()
         self.info_label.text += '\n' + video_meta['filename']
-        # nm.file_receive(f'{self.data_dir}/{video_meta["filename"]}')
-        # breakpoint()
-        # nm.send("lalalo;")
+        nm.file_receive(f'{self.data_dir}/{video_meta["filename"]}')
         nm.close()
 
     def write_random_file(self, obj):
@@ -85,8 +72,6 @@ class MyCounterApp(App):
         if platform == 'android':
             shared_path = SharedStorage().copy_to_shared(f'{self.data_dir}/text.txt')
             self.info_label.text += '\n' + str(shared_path)
-            Logger.info( "kivyyvik_shared_storage1 " + str(shared_path))
-            Logger.info( "kivyyvik_shared_storage2 " + str(shared_path.getPath()))
 
     def read_file(self, obj):
         with open(f'{self.data_dir}/text.txt', 'r') as f:

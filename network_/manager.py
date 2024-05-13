@@ -49,26 +49,26 @@ class NetworkManager:
         filesize = os.path.getsize(filename)
         print(f"{filesize=}")
         self.send(filesize)
-        # with open(filename, 'rb') as f:
-        #     l = f.read(self.buff_size)
-        #     start_time = time.time()
-        #     idx = 0
-        #     while l:
-        #         l = f.read(self.buff_size)
-        #         self.sock.send(l)
-        #         print(f'Progress:   {round(100 * idx * self.buff_size/ filesize, 2)}; '
-        #               f's; elapsed:    {round(time.time() - start_time)}'
-        #               f's; remaining: {round((time.time() - start_time) / (idx * self.buff_size / filesize + 0.0001) * (1 - idx * self.buff_size / 4096), 1)}')
-        #         idx += 1
+        with open(filename, 'rb') as f:
+            l = f.read(self.buff_size)
+            start_time = time.time()
+            idx = 0
+            while l:
+                self.sock.send(l)
+                l = f.read(self.buff_size)
+                print(f'Progress:   {round(100 * idx * self.buff_size/ filesize, 2)}; '
+                      f's; elapsed:    {round(time.time() - start_time)}'
+                      f's; remaining: {round((time.time() - start_time) / (idx * self.buff_size / filesize + 0.0001) * (1 - idx * self.buff_size / 4096), 1)}')
+                idx += 1
 
     def file_receive(self, filename):
         from kivy import Logger
         Logger.info(f"{filename=}")
         filesize = self.recv()
         Logger.info(f"{filesize=}")
-        # while filesize > 0:
-        #     with open(filename, 'wb') as f:
-        #         chunk = self.sock.recv(self.buff_size)
-        #         f.write(chunk)
-        #         filesize -= len(chunk)
-        #         Logger.info(f'{filesize=}; {len(chunk)=}')
+        while filesize > 0:
+            with open(filename, 'wb') as f:
+                chunk = self.sock.recv(self.buff_size)
+                f.write(chunk)
+                filesize -= len(chunk)
+                Logger.info(f'{filesize=}; {len(chunk)=}')

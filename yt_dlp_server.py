@@ -7,7 +7,7 @@ from os import urandom
 from network_.manager import NetworkManager
 from ytdlp.helper import process_query 
 
-BUFF_SIZE = 16
+BUFF_SIZE = 4096
 OUTPUT_DIR = '/home/steganopus/Documents/TAoS/misc/20220814/server_client_kivy/kivy/media' 
 
 def main(ip, port):
@@ -26,11 +26,9 @@ class YtDlpHandler(NetworkManager):
         try:
             # data = self.recv()
             data = self.recv()
-            data = self.recv()
             filename = process_query(data['query'], data['add_video'], data['high_quality'], OUTPUT_DIR)
             self.send({'filename': filename})
-            self.send({'filename': filename})
-            # self.file_send(f'{OUTPUT_DIR}/{filename}')
+            self.file_send(f'{OUTPUT_DIR}/{filename}')
             print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
         except Exception as e:
             print(e)
