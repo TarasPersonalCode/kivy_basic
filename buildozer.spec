@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = My Application
+title = PanZavantazhenko
 
 # (str) Package name
-package.name = myapp
+package.name = PanZavantazhenko 
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
@@ -47,7 +47,7 @@ requirements = python3,kivy,androidstorage4kivy
 #presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = ./pan_zavantazhenko.jpg
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
