@@ -68,7 +68,6 @@ class SharingApp(App):
     def button_callback(self, obj):
         self.send_request(obj)
         self.receive_file(obj)
-        self.copy_file(obj)
 
     def send_request(self, obj):
         client = socket.socket()
@@ -84,10 +83,9 @@ class SharingApp(App):
         private_filename = f'{self.data_dir}/{file_meta["filename"]}'
         self.nm.file_receive(private_filename)
         self.nm.close()
-
-    def copy_file(self, obj):
         if platform == 'android':
             shared_path = SharedStorage().copy_to_shared(private_filename)
+            self.info_label.text = 'Done'
 
 if __name__ == "__main__":
     SharingApp().run()
