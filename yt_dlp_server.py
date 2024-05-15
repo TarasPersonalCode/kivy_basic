@@ -8,29 +8,29 @@ from network_.manager import NetworkManager
 
 from ytdlp.helper import process_query 
 
-BUFF_SIZE = 4096
-OUTPUT_DIR = '/home/steganopus/Documents/TAoS/misc/20220814/server_client_kivy/kivy/media' 
-
-def main(ip, port):
+def main(ip, port, buff_size, output_dir):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((ip, port))
     server.listen(5)
     print(f'[*] Listening on {ip}:{port}')
     while True:
         sock, address = server.accept()
-        print(f'[*] Accepted connection from {address[0]}: {address[1]})')
-        threading.Thread(target=YtDlpHandler.make_handler_and_run, args=(sock, BUFF_SIZE)).start()
+        print(f'[*] Accepted connection from {address[0]}: {address[1]}')
+        threading.Thread(target=YtDlpHandler.make_handler_and_run, args=(sock, buff_size, output_dir)).start()
 
 
 class YtDlpHandler(NetworkManager):
+    def __init__(self, sock, buff_size, output_dir):
+        super().__init__(sock, buff_size)
+        self.output_dir = output_dir
+
     def run(self):
         try:
-            # data = self.recv()
             data = self.recv()
-            filename = process_query(data['query'], data['add_video'], data['high_quality'], OUTPUT_DIR)
+            print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
+            filename = process_query(data['query'], data['add_video'], data['high_quality'], self.output_dir)
             self.send({'filename': filename})
             self.file_send(f'{OUTPUT_DIR}/{filename}')
-            print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
         except Exception as e:
             print(e)
 
@@ -41,8 +41,10 @@ class YtDlpHandler(NetworkManager):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ip',   type=str, required=True)
-    parser.add_argument('--port', type=int, required=True)
+    parser.add_argument('--ip',         type=str, required=True)
+    parser.add_argument('--port',       type=int, required=True)
+    parser.add_argument('--buff-size',  type=int, required=True)
+    parser.add_argument('--output-dir', type=str, required=True)
     args = parser.parse_args()
-    main(args.ip, args.port)
+    main(args.ip, args.port, args.buff_size, args.output_dir)
 

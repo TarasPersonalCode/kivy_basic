@@ -5,3 +5,4 @@ media/
 main.py
 *swp
 *__pycache__*
+config.json

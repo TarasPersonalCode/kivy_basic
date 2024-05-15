@@ -1,3 +1,4 @@
+import json
 import os
 import pathlib
 import socket
@@ -23,12 +24,15 @@ if platform == 'android':
 from kivy.config import Config
 Config.set('graphics', 'resizable', True)
 
-IP = '146.168.100.42'
-PORT = 16770
+with open('./config.json', 'r') as f:
+    cfg = json.load(f)
+
+IP   = cfg['IP'] 
+PORT = cfg['PORT']
 
 BUFF_SIZE = 4096
 
-class MyCounterApp(App):
+class SharingApp(App):
     def build(self):
         self.data_dir = self.user_data_dir
         root_widget = self.build_root_widget()
@@ -37,11 +41,14 @@ class MyCounterApp(App):
     def build_root_widget(self):
         grid = GridLayout()
         grid.cols = 1
-        self.info_label = Label(text=f'enter IP:PORT in the window below\ndata_dir = {self.data_dir}')
-        self.ip_input       = TextInput(multiline=False, text='146.168.100.42:16771')
-        self.request_input  = TextInput(multiline=False, text='Farewell to Erin - Mandolin and Bodhrán')
-        button      = Button(text="process video")
+        # initialize widgets
+        self.info_label    = Label(text=f'enter IP:PORT in the window below\ndata_dir = {self.data_dir}')
+        self.ip_input      = TextInput(multiline=False, text=f'{IP}:{PORT}')
+        self.request_input = TextInput(multiline=False, text='Farewell to Erin - Mandolin and Bodhrán')
+        button             = Button(text="send request")
+        # button bind
         button.bind(on_press=self.button_callback)
+        # add widgets
         grid.add_widget(self.info_label)
         grid.add_widget(self.ip_input)
         grid.add_widget(self.request_input)
@@ -50,34 +57,25 @@ class MyCounterApp(App):
 
     def button_callback(self, obj):
         self.send_request(obj)
-        self.write_random_file(obj)
-        self.read_file(obj)
+        self.receive_file(obj)
+        self.copy_file(obj)
 
     def send_request(self, obj):
         client = socket.socket()
         IP, PORT = self.ip_input.text.split(':')
         client.connect((str(IP), int(PORT)))
-        nm = NetworkManager(client, BUFF_SIZE)
-        nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
-        video_meta = nm.recv()
-        self.info_label.text += '\n' + video_meta['filename']
-        private_filename = f'{self.data_dir}/{video_meta["filename"]}'
-        nm.file_receive(private_filename)
-        self.info_label.text += '\n' + str(os.path.getsize(private_filename))
-        nm.close()
+        self.nm = NetworkManager(client, BUFF_SIZE)
+        self.nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
+
+    def receive_file(self, obj):
+        file_meta = self.nm.recv()
+        private_filename = f'{self.data_dir}/{file_meta["filename"]}'
+        self.nm.file_receive(private_filename)
+        self.nm.close()
+
+    def copy_file(self, obj):
         if platform == 'android':
             shared_path = SharedStorage().copy_to_shared(private_filename)
-            self.info_label.text += '\n' + str(shared_path)
-
-    def write_random_file(self, obj):
-        pathlib.Path(self.data_dir).mkdir(parents=True, exist_ok=True)
-        with open(f'{self.data_dir}/text.txt', 'w') as f:
-            f.write('Hello world!')
-
-    def read_file(self, obj):
-        with open(f'{self.data_dir}/text.txt', 'r') as f:
-            line = f.readline().strip()
-            self.info_label.text += '\n' + line
 
 if __name__ == "__main__":
-    MyCounterApp().run()
+    SharingApp().run()
