@@ -30,13 +30,13 @@ class YtDlpHandler(NetworkManager):
             print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
             filename = process_query(data['query'], data['add_video'], data['high_quality'], self.output_dir)
             self.send({'filename': filename})
-            self.file_send(f'{OUTPUT_DIR}/{filename}')
+            self.file_send(f'{self.output_dir}/{filename}')
         except Exception as e:
             print(e)
 
     @staticmethod
-    def make_handler_and_run(sock, buff_size):
-        handler = YtDlpHandler(sock, buff_size)
+    def make_handler_and_run(sock, buff_size, output_dir):
+        handler = YtDlpHandler(sock, buff_size, output_dir)
         handler.run()
 
 if __name__ == '__main__':

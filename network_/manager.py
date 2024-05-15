@@ -57,7 +57,6 @@ class NetworkManager:
                       f's; remaining:  {round(elapsed / (sentfrac + 0.1) * (1 - sentfrac), 1)}')
 
     def file_receive(self, filename):
-        from kivy import Logger
         filesize = self.recv()
         open(filename, 'wb').close()
         while filesize > 0:
