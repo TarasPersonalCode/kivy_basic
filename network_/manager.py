@@ -12,27 +12,32 @@ class NetworkManager:
     
     def send_int(self, int_number):
         bytes_number = int_number.to_bytes(self.buff_size, 'big')
+        print(f"[NetworkManager.send_int]: {bytes_number=}; {len(bytes_number)=}")
         self.sock.send(bytes_number)
 
     def recv_bytes_w_size(self):
-        inbound_size_bytes = self.sock.recv(self.buff_size)
+        inbound_size_bytes = self.receive_bytes_of_size(self.buff_size)
+        print(f"[NetworkManager.recv_bytes_w_size]: {len(inbound_size_bytes)=}")
         inbound_size = int.from_bytes(inbound_size_bytes, 'big')
-        print(f"[NetworkManager.recv_bytes_w_size]: {inbound_size=}")
+        return self.receive_bytes_of_size(inbound_size)
+
+    def receive_bytes_of_size(self, inbound_size):
+        print(f"[NetworkManager.recv_bytes_of_size]: {inbound_size=}")
         inbound_msg  = b""
         while inbound_size > 0:
             chunk = self.sock.recv(min(self.buff_size, inbound_size))
             inbound_size -= len(chunk)
             inbound_msg  += chunk
-        print(f"[NetworkManager.recv_bytes_w_size]: {inbound_msg=}")
+        # print(f"[NetworkManager.recv_bytes_of_size]: {inbound_msg=}")
         return inbound_msg  
 
     def recv(self):
         return pickle.loads(self.recv_bytes_w_size())
 
     def send_bytes_w_size(self, outbound_msg):
-        print(f"[NetworkManager.send_bytes_w_size]: {outbound_msg=}")
+        # print(f"[NetworkManager.send_bytes_w_size]: {outbound_msg=}")
         outbound_size = len(outbound_msg)
-        print(f"[NetworkManager.send_bytes_w_size]: {outbound_size=}")
+        # print(f"[NetworkManager.send_bytes_w_size]: {outbound_size=}")
         self.send_int(outbound_size)
         for chunk in range(0, outbound_size, self.buff_size):
             self.sock.send(outbound_msg[chunk:chunk+self.buff_size])
@@ -66,8 +71,9 @@ class NetworkManager:
         Logger.info(f"{filename=}")
         filesize = self.recv()
         Logger.info(f"{filesize=}")
+        open(filename, 'wb').close()
         while filesize > 0:
-            with open(filename, 'wb') as f:
+            with open(filename, 'ab') as f:
                 chunk = self.sock.recv(self.buff_size)
                 f.write(chunk)
                 filesize -= len(chunk)

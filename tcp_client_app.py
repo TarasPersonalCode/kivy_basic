@@ -1,9 +1,8 @@
+import os
 import pathlib
 import socket
 import threading
 import time
-
-from os import urandom
 
 from kivy.app import App
 from kivy.logger import Logger
@@ -62,16 +61,18 @@ class MyCounterApp(App):
         nm.send({"query": self.request_input.text, "add_video": False, "high_quality": False})
         video_meta = nm.recv()
         self.info_label.text += '\n' + video_meta['filename']
-        nm.file_receive(f'{self.data_dir}/{video_meta["filename"]}')
+        private_filename = f'{self.data_dir}/{video_meta["filename"]}'
+        nm.file_receive(private_filename)
+        self.info_label.text += '\n' + str(os.path.getsize(private_filename))
         nm.close()
+        if platform == 'android':
+            shared_path = SharedStorage().copy_to_shared(private_filename)
+            self.info_label.text += '\n' + str(shared_path)
 
     def write_random_file(self, obj):
         pathlib.Path(self.data_dir).mkdir(parents=True, exist_ok=True)
         with open(f'{self.data_dir}/text.txt', 'w') as f:
             f.write('Hello world!')
-        if platform == 'android':
-            shared_path = SharedStorage().copy_to_shared(f'{self.data_dir}/text.txt')
-            self.info_label.text += '\n' + str(shared_path)
 
     def read_file(self, obj):
         with open(f'{self.data_dir}/text.txt', 'r') as f:
