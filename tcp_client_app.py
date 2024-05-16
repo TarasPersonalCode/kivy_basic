@@ -25,7 +25,7 @@ if platform == 'android':
 from kivy.config import Config
 Config.set('graphics', 'resizable', True)
 
-with open('./config.json', 'r') as f:
+with open('./network_/config.json', 'r') as f:
     cfg = json.load(f)
 IP   = cfg['IP'] 
 PORT = cfg['PORT']

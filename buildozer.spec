@@ -47,7 +47,7 @@ requirements = python3,kivy,androidstorage4kivy
 #presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-icon.filename = ./pan_zavantazhenko.jpg
+icon.filename = ./media/pan_zavantazhenko.jpg
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
