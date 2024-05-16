@@ -44,10 +44,10 @@ class SharingApp(App):
 
     def start_service(self):
         if platform == "android":
-            SERVICE_NAME = u"org.test.PanZavantazhenko.ServiceMyservice" 
+            SERVICE_NAME = u"org.test.panzavantazhenko.ServiceMyservice" 
             service = autoclass(SERVICE_NAME)
             mActivity = autoclass(u'org.kivy.android.PythonActivity').mActivity
-            service.start(mActivity, argument)
+            service.start(mActivity, '')
 
     def build_root_widget(self):
         grid = GridLayout()
