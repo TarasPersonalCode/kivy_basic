@@ -21,22 +21,33 @@ if platform == 'android':
     from androidstorage4kivy import SharedStorage
     from android import api_version
     from android import mActivity, autoclass
+    
 
 from kivy.config import Config
 Config.set('graphics', 'resizable', True)
 
-with open('./network_/config.json', 'r') as f:
-    cfg = json.load(f)
-IP   = cfg['IP'] 
-PORT = cfg['PORT']
+# with open('./config.json', 'r') as f:
+#     cfg = json.load(f)
+# IP   = cfg['IP'] 
+# PORT = cfg['PORT']
 
+IP = '146.168.100.42'
+PORT = 16771
 BUFF_SIZE = 4096
 
 class SharingApp(App):
     def build(self):
         self.data_dir = self.user_data_dir
         root_widget = self.build_root_widget()
+        self.start_service()
         return root_widget
+
+    def start_service(self):
+        if platform == "android":
+            SERVICE_NAME = u"org.test.PanZavantazhenko.ServiceMyservice" 
+            service = autoclass(SERVICE_NAME)
+            mActivity = autoclass(u'org.kivy.android.PythonActivity').mActivity
+            service.start(mActivity, argument)
 
     def build_root_widget(self):
         grid = GridLayout()
@@ -53,19 +64,30 @@ class SharingApp(App):
         self.toggles.add_widget(self.quality_toggle)
         self.toggles.add_widget(self.video_toggle)
         button              = Button(text="Request")
+        button2             = Button(text="Talk to service")
         # button bind
-        button.bind(on_press=self.button_callback)
+        button.bind( on_press=self.button_callback)
+        button2.bind(on_press=self.button_callback2)
         # add widgets
         grid.add_widget(self.info_label)
         grid.add_widget(self.ip_input)
         grid.add_widget(self.request_input)
         grid.add_widget(self.toggles)
         grid.add_widget(button)
+        grid.add_widget(button2)
         return grid 
 
     def button_callback(self, obj):
         self.send_request(obj)
         self.receive_file(obj)
+
+    def button_callback2(self, obj):
+        service_sock = socket.socket()
+        service_sock.connect(("127.0.0.1", 3002))
+        service_nm = NetworkManager(service_sock, BUFF_SIZE)
+        service_nm.send({"test": "lalala"})
+        service_response = service_nm.recv()
+        self.info_label.text = service_response["test"]
 
     def send_request(self, obj):
         client = socket.socket()

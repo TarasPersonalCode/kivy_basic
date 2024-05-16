@@ -4,7 +4,7 @@
 title = PanZavantazhenko
 
 # (str) Package name
-package.name = PanZavantazhenko 
+package.name = panzavantazhenko 
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
@@ -55,6 +55,7 @@ orientation = portrait
 
 # (list) List of service to declare
 #services = NAME:ENTRYPOINT_TO_PY,NAME2:ENTRYPOINT2_TO_PY
+services = Myservice:service.py
 
 #
 # OSX Specific
