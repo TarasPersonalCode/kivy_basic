@@ -25,13 +25,11 @@ if platform == 'android':
 from kivy.config import Config
 Config.set('graphics', 'resizable', True)
 
-# with open('./config.json', 'r') as f:
-#     cfg = json.load(f)
-# IP   = cfg['IP'] 
-# PORT = cfg['PORT']
+with open('./config.json', 'r') as f:
+    cfg = json.load(f)
+IP   = cfg['IP'] 
+PORT = cfg['PORT']
 
-IP = '146.168.100.42'
-PORT = 16771
 BUFF_SIZE = 4096
 
 class SharingApp(App):
