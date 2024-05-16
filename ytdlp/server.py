@@ -14,28 +14,19 @@ def main(ip, port, buff_size, output_dir):
     while True:
         sock, address = server.accept()
         print(f'[*] Accepted connection from {address[0]}: {address[1]}')
-        threading.Thread(target=YtDlpHandler.make_handler_and_run, args=(sock, buff_size, output_dir)).start()
+        threading.Thread(target=handle_client, args=(sock, buff_size, output_dir)).start()
 
 
-class YtDlpHandler(NetworkManager):
-    def __init__(self, sock, buff_size, output_dir):
-        super().__init__(sock, buff_size)
-        self.output_dir = output_dir
-
-    def run(self):
-        try:
-            data = self.recv()
-            print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
-            filename = process_query(data['query'], data['add_video'], data['high_quality'], self.output_dir)
-            self.send({'filename': filename})
-            self.file_send(f'{self.output_dir}/{filename}')
-        except Exception as e:
-            print(e)
-
-    @staticmethod
-    def make_handler_and_run(sock, buff_size, output_dir):
-        handler = YtDlpHandler(sock, buff_size, output_dir)
-        handler.run()
+def handle_client(sock, buff_size, output_dir):
+    nm = NetworkManager(sock, buff_size)
+    try:
+        data = nm.recv()
+        print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
+        filename = process_query(data['query'], data['add_video'], data['high_quality'], output_dir)
+        nm.send({'filename': filename})
+        nm.file_send(f'{output_dir}/{filename}')
+    except Exception as e:
+        print(e)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
