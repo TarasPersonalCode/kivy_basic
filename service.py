@@ -20,6 +20,6 @@ if __name__ == '__main__':
     service_sock.listen(5)
     while True:
         ui_sock, _ = service_sock.accept()
-        threading.Thread(target=handle_ui, args=(ui_sock)).start()
+        threading.Thread(target=handle_ui, args=(ui_sock, )).start()
 
 
