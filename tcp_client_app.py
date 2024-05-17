@@ -82,12 +82,21 @@ class SharingApp(App):
         self.receive_file(obj)
 
     def button_callback2(self, obj):
+        IP, PORT = self.ip_input.text.split(':')
         service_sock = socket.socket()
         service_sock.connect(("127.0.0.1", 3002))
         service_nm = NetworkManager(service_sock, BUFF_SIZE)
-        service_nm.send({"test": "lalala"})
+        service_nm.send({"query": self.request_input.text, 
+                         "add_video": self.video_toggle.state == "down", 
+                         "high_quality": self.quality_toggle.state == "down", 
+                         "IP": IP,
+                         "PORT": PORT,
+                         "data_dir": self.data_dir})
         service_response = service_nm.recv()
-        self.info_label.text = service_response["test"]
+        while service_response != "Done": 
+            self.info_label.text = service_response
+            service_response = service_nm
+        service_nm.close()
 
     def send_request(self, obj):
         client = socket.socket()

@@ -9,9 +9,20 @@ BUFF_SIZE = 4096
 
 def handle_ui(ui_sock):
     ui_nm = NetworkManager(ui_sock, BUFF_SIZE)
-    test_data = ui_nm.recv()
-    test_data["test"] = "lololo"
-    ui_nm.send(test_data)
+    request_data = ui_nm.recv()
+    IP, PORT = request_data["IP"], request_data["PORT"]
+    server = socket.socket()
+    server.connect((IP, PORT))
+    server_nm = NetworkManager(server, BUFF_SIZE)
+    server_nm.send({"query": request_data["query"],
+                    "add_video": request_data["add_video"],
+                    "high_quality": request_data["high_quality"]})
+    file_meta = server_nm.recv()
+    private_filename = f"{request_data['data-dir']}/{file_meta['filename']}"
+    server_nm.file_receive(private_filename)
+    server_nm.close()
+    ui_nm.send("finished")
+    ui_nm.send("Done")
     ui_nm.close()
 
 if __name__ == '__main__':
