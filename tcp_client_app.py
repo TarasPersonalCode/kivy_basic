@@ -95,7 +95,7 @@ class SharingApp(App):
         service_response = service_nm.recv()
         while service_response != "Done": 
             self.info_label.text = service_response
-            service_response = service_nm
+            service_response = service_nm.recv()
         service_nm.close()
 
     def send_request(self, obj):

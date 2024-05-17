@@ -18,7 +18,7 @@ def handle_ui(ui_sock):
                     "add_video": request_data["add_video"],
                     "high_quality": request_data["high_quality"]})
     file_meta = server_nm.recv()
-    private_filename = f"{request_data['data-dir']}/{file_meta['filename']}"
+    private_filename = f"{request_data['data_dir']}/{file_meta['filename']}"
     server_nm.file_receive(private_filename)
     server_nm.close()
     ui_nm.send("finished")
