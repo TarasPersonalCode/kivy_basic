@@ -12,7 +12,7 @@ def handle_ui(ui_sock):
     request_data = ui_nm.recv()
     IP, PORT = request_data["IP"], request_data["PORT"]
     server = socket.socket()
-    server.connect((IP, PORT))
+    server.connect((str(IP), int(PORT)))
     server_nm = NetworkManager(server, BUFF_SIZE)
     server_nm.send({"query": request_data["query"],
                     "add_video": request_data["add_video"],
