@@ -41,7 +41,7 @@ BUFF_SIZE = 4096
 class SharingApp(App):
     def build(self):
         root_widget = self.build_root_widget()
-        self.start_service()
+        # self.start_service()
         self.button_locked = False
         return root_widget
 
