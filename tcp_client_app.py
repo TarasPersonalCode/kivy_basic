@@ -1,11 +1,13 @@
 import json
 import os
 import pathlib
+import random
 import socket
 import threading
 import time
 
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.logger import Logger
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
@@ -16,6 +18,7 @@ from kivy.uix.widget  import Widget
 from kivy.utils import platform
 
 from network_.manager import NetworkManager
+from network_.file_receiver import NetworkFileReceiver
 
 if platform == 'android':
     from androidstorage4kivy import SharedStorage
@@ -37,7 +40,6 @@ BUFF_SIZE = 4096
 
 class SharingApp(App):
     def build(self):
-        self.data_dir = self.user_data_dir
         root_widget = self.build_root_widget()
         self.start_service()
         return root_widget
@@ -53,7 +55,7 @@ class SharingApp(App):
         grid = GridLayout()
         grid.cols = 1
         # initialize widgets
-        self.info_label     = Label(text=f'enter IP:PORT in the window below\ndata_dir = {self.data_dir}')
+        self.info_label     = Label(text=f'enter IP:PORT in the window below')
         self.ip_input       = TextInput(multiline=False, text=f'{IP}:{PORT}')
         self.request_input  = TextInput(multiline=False, text='Farewell to Erin - Mandolin and Bodhrán')
         
@@ -64,39 +66,24 @@ class SharingApp(App):
         self.toggles.add_widget(self.quality_toggle)
         self.toggles.add_widget(self.video_toggle)
         button              = Button(text="Request")
-        button2             = Button(text="Talk to service")
         # button bind
         button.bind( on_press=self.button_callback)
-        button2.bind(on_press=self.button_callback2)
         # add widgets
         grid.add_widget(self.info_label)
         grid.add_widget(self.ip_input)
         grid.add_widget(self.request_input)
         grid.add_widget(self.toggles)
         grid.add_widget(button)
-        grid.add_widget(button2)
         return grid 
+
+    def button_callback2(self, obj):
+        def set_label(dt):
+            self.info_label.text = str(random.randint(1, 10))
+        Clock.schedule_interval(set_label, 0.01)
 
     def button_callback(self, obj):
         self.send_request(obj)
         self.receive_file(obj)
-
-    def button_callback2(self, obj):
-        IP, PORT = self.ip_input.text.split(':')
-        service_sock = socket.socket()
-        service_sock.connect(("127.0.0.1", 3002))
-        service_nm = NetworkManager(service_sock, BUFF_SIZE)
-        service_nm.send({"query": self.request_input.text, 
-                         "add_video": self.video_toggle.state == "down", 
-                         "high_quality": self.quality_toggle.state == "down", 
-                         "IP": IP,
-                         "PORT": PORT,
-                         "data_dir": self.data_dir})
-        service_response = service_nm.recv()
-        while service_response != "Done": 
-            self.info_label.text = service_response
-            service_response = service_nm.recv()
-        service_nm.close()
 
     def send_request(self, obj):
         client = socket.socket()
@@ -109,9 +96,11 @@ class SharingApp(App):
 
     def receive_file(self, obj):
         file_meta = self.nm.recv()
-        private_filename = f'{self.data_dir}/{file_meta["filename"]}'
-        self.nm.file_receive(private_filename)
-        self.nm.close()
+        private_filename = f'{self.user_data_dir}/{file_meta["filename"]}'
+        # self.nm.file_receive(private_filename)
+        nfr = NetworkFileReceiver(self.nm, private_filename, 10)
+        Clock.schedule_interval(lambda dt: nfr.receive_batch(), 0.03)
+        # self.nm.close()
         if platform == 'android':
             shared_path = SharedStorage().copy_to_shared(private_filename)
             self.info_label.text = 'Done'

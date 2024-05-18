@@ -3,6 +3,8 @@ import pickle
 import socket
 import time
 
+from network_.file_receiver import NetworkFileReceiver
+
 class NetworkManager:
     def __init__(self, client_socket, buff_size):
         self.sock      = client_socket
@@ -56,11 +58,6 @@ class NetworkManager:
                       f's; elapsed:    {round(elapsed)}'
                       f's; remaining:  {round(elapsed / (sentfrac + 0.1) * (1 - sentfrac), 1)}')
 
-    def file_receive(self, filename):
-        filesize = self.recv()
-        open(filename, 'wb').close()
-        while filesize > 0:
-            with open(filename, 'ab') as f:
-                chunk = self.sock.recv(self.buff_size)
-                f.write(chunk)
-                filesize -= len(chunk)
+    # def file_receive(self, filename):
+    #     NetworkFileReceiver(self, filename, 10).receive_all()
+
