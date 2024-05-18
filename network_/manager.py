@@ -57,7 +57,3 @@ class NetworkManager:
                 print(f'Progress:      {round(sentfrac, 2)}; '
                       f's; elapsed:    {round(elapsed)}'
                       f's; remaining:  {round(elapsed / (sentfrac + 0.1) * (1 - sentfrac), 1)}')
-
-    # def file_receive(self, filename):
-    #     NetworkFileReceiver(self, filename, 10).receive_all()
-

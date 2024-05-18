@@ -42,6 +42,7 @@ class SharingApp(App):
     def build(self):
         root_widget = self.build_root_widget()
         self.start_service()
+        self.button_locked = False
         return root_widget
 
     def start_service(self):
@@ -82,8 +83,13 @@ class SharingApp(App):
         Clock.schedule_interval(set_label, 0.01)
 
     def button_callback(self, obj):
-        self.send_request(obj)
-        self.receive_file(obj)
+        if not self.button_locked:
+            self.button_locked = True
+            self.send_request(obj)
+            self.receive_file_meta(obj)
+            self.receive_file(obj)
+        else:
+            self.info_label.text = "Button locked, please wait"
 
     def send_request(self, obj):
         client = socket.socket()
@@ -94,16 +100,38 @@ class SharingApp(App):
                       "add_video": self.video_toggle.state == "down", 
                       "high_quality": self.quality_toggle.state == "down"})
 
-    def receive_file(self, obj):
+    def receive_file_meta(self, obj):
         file_meta = self.nm.recv()
-        private_filename = f'{self.user_data_dir}/{file_meta["filename"]}'
-        # self.nm.file_receive(private_filename)
-        nfr = NetworkFileReceiver(self.nm, private_filename, 10)
+        self.filename = file_meta["filename"]
+        self.filesize = file_meta["filesize"]
+        self.private_filepath = f'{self.user_data_dir}/{self.filename}'
+
+    def receive_file(self, obj):
+        nfr = NetworkFileReceiver(self.nm, self.private_filepath, 10)
         Clock.schedule_interval(lambda dt: nfr.receive_batch(), 0.03)
-        # self.nm.close()
-        if platform == 'android':
-            shared_path = SharedStorage().copy_to_shared(private_filename)
-            self.info_label.text = 'Done'
+        Clock.schedule_interval(lambda dt: self.update_progress(), 0.2)
+        Clock.schedule_interval(lambda dt: self.move_file_to_shared(), 0.2)
+        Clock.schedule_interval(lambda dt: self.unlock_button(), 0.2)
+
+    def update_progress(self):
+        cursize = os.path.getsize(self.private_filepath)
+        self.info_label.text = f"Progress: {round(cursize / self.filesize, 2)}"
+        if cursize == self.filesize:
+            return False
+
+    def move_file_to_shared(self):
+        cursize = os.path.getsize(self.private_filepath)
+        if cursize == self.filesize:
+            if platform == 'android':
+                shared_path = SharedStorage().copy_to_shared(self.private_filepath)
+                self.info_label.text = 'Done'
+            return False
+
+    def unlock_button(self):
+        cursize = os.path.getsize(self.private_filepath)
+        if cursize == self.filesize:
+            self.button_locked = False
+            return False
 
 if __name__ == "__main__":
     SharingApp().run()
