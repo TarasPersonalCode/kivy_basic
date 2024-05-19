@@ -123,7 +123,9 @@ class SharingApp(App):
         cursize = os.path.getsize(self.private_filepath)
         if cursize == self.filesize:
             if platform == 'android':
-                shared_path = SharedStorage().copy_to_shared(self.private_filepath)
+                Environment = autoclass('android.os.Environment')
+                shared_path = SharedStorage().copy_to_shared(self.private_filepath,
+                                                             collection=Environment.DIRECTORY_DOCUMENTS)
                 self.info_label.text = 'Done'
             return False
 
