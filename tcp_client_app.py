@@ -79,11 +79,15 @@ class SharingApp(App):
         if not self.button_locked:
             self.button_locked = True
             self.info_label.text = 'Request sent, waiting on server...'
-            self.send_request(obj)
-            self.receive_file_meta(obj)
-            self.receive_file(obj)
+            Clock.schedule_interval(lambda dt: self.start_download(obj), 0.5)
         else:
             self.info_label.text = "Button locked, please wait"
+
+    def start_download(self, obj):
+        self.send_request(obj)
+        self.receive_file_meta(obj)
+        self.receive_file(obj)
+        return False
 
     def send_request(self, obj):
         client = socket.socket()
@@ -101,7 +105,7 @@ class SharingApp(App):
         self.private_filepath = f'{self.user_data_dir}/{self.filename}'
 
     def receive_file(self, obj):
-        nfr = NetworkFileReceiver(self.nm, self.private_filepath, 10)
+        nfr = NetworkFileReceiver(self.nm, self.private_filepath, 50)
         Clock.schedule_interval(lambda dt: nfr.receive_batch(), 0.03)
         Clock.schedule_interval(lambda dt: self.update_progress(), 0.2)
         Clock.schedule_interval(lambda dt: self.move_file_to_shared(), 0.2)
