@@ -75,14 +75,10 @@ class SharingApp(App):
         grid.add_widget(button)
         return grid 
 
-    def button_callback2(self, obj):
-        def set_label(dt):
-            self.info_label.text = str(random.randint(1, 10))
-        Clock.schedule_interval(set_label, 0.01)
-
     def button_callback(self, obj):
         if not self.button_locked:
             self.button_locked = True
+            self.info_label.text = 'Request sent, waiting on server...'
             self.send_request(obj)
             self.receive_file_meta(obj)
             self.receive_file(obj)
@@ -118,13 +114,19 @@ class SharingApp(App):
             return False
 
     def move_file_to_shared(self):
+        self.checkpoint_frac = 0.1
+        self.checkpoint_count = 0
         cursize = os.path.getsize(self.private_filepath)
-        if cursize == self.filesize:
+        curfrac = cursize / self.filesize
+        if int(curfrac / self.checkpoint_frac) > self.checkpoint_count:
+            self.checkpoint_count = int(curfrac / self.checkpoint_frac)
             if platform == 'android':
                 Environment = autoclass('android.os.Environment')
                 shared_path = SharedStorage().copy_to_shared(self.private_filepath,
-                                                             collection=Environment.DIRECTORY_DOCUMENTS)
-                self.info_label.text = 'Done'
+                                                             collection=Environment.DIRECTORY_DOWNLOADS)
+
+        if cursize == self.filesize:
+            self.info_label.text = 'Done'
             return False
 
     def unlock_button(self):
