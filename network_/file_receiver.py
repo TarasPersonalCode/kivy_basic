@@ -6,6 +6,7 @@ class NetworkFileReceiver:
         self.batch_size = batch_size
         open(filename, 'wb').close()
         self.filesize = None
+        self.num_receptions = 0
 
     def receive_batch(self):
         if self.filesize is None:
@@ -16,8 +17,10 @@ class NetworkFileReceiver:
                 chunk = self.nm.sock.recv(self.nm.buff_size)
                 f.write(chunk)
                 self.filesize -= len(chunk)
-                print(f'{self.filesize=}')
+                if self.num_receptions % 20 == 0:
+                    print(f'{self.filesize=}')
             batch_ctr -= 1 
+        self.num_receptions += 1
         return self.filesize != 0
 
     def receive_all(self):
