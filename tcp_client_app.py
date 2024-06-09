@@ -29,7 +29,7 @@ if platform == 'android':
 from kivy.config import Config
 Config.set('graphics', 'resizable', True)
 
-with open('./config.json', 'r') as f:
+with open('./network_/config.json', 'r') as f:
     cfg = json.load(f)
 IP        = cfg['IP']
 PORT      = cfg['PORT']
@@ -40,6 +40,7 @@ class SharingApp(App):
         root_widget = self.build_root_widget()
         # self.start_service()
         self.button_locked = False
+        print(f"[***] {self.user_data_dir=}")
         return root_widget
 
     def start_service(self):
