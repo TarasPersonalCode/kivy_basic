@@ -31,6 +31,7 @@ Config.set('graphics', 'resizable', True)
 
 with open('./network_/config.json', 'r') as f:
     cfg = json.load(f)
+
 IP        = cfg['IP']
 PORT      = cfg['PORT']
 BUFF_SIZE = cfg['BUFF_SIZE']
@@ -84,19 +85,26 @@ class SharingApp(App):
             self.info_label.text = "Button locked, please wait"
 
     def start_download(self, obj):
+        self.setup_network_manager(obj)
+        self.formulate_request(obj)
         self.send_request(obj)
         self.receive_file_meta(obj)
         self.receive_file(obj)
         return False
 
-    def send_request(self, obj):
+    def setup_network_manager(self, obj):
         client = socket.socket()
         IP, PORT = self.ip_input.text.split(':')
         client.connect((str(IP), int(PORT)))
         self.nm = NetworkManager(client, BUFF_SIZE)
-        self.nm.send({"query": self.request_input.text, 
-                      "add_video": self.video_toggle.state == "down", 
-                      "high_quality": self.quality_toggle.state == "down"})
+
+    def formulate_request(self, obj):
+        self.request = {"query": self.request_input.text, 
+                        "add_video": self.video_toggle.state == "down", 
+                        "high_quality": self.quality_toggle.state == "down"} 
+
+    def send_request(self, obj):
+        self.nm.send(self.request)
 
     def receive_file_meta(self, obj):
         file_meta = self.nm.recv()
