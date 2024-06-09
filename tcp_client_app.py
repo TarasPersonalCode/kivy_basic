@@ -80,7 +80,7 @@ class SharingApp(App):
         if not self.button_locked:
             self.button_locked = True
             self.info_label.text = 'Request sent, waiting on server...'
-            Clock.schedule_interval(lambda dt: self.start_download(obj), 0.5)
+            Clock.schedule_once(lambda dt: self.start_download(obj), 0.2)
         else:
             self.info_label.text = "Button locked, please wait"
 
