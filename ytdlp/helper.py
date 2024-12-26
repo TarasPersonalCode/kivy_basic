@@ -6,7 +6,7 @@ import subprocess
 import urllib.request, urllib
 
 SEARCH_TEMPLATE = "https://www.youtube.com/results?search_query="
-DOWNLOAD_CMD = '/home/steganopus/Downloads/yt-dlp_linux https://www.youtube.com/watch?v={video_id} '\
+DOWNLOAD_CMD = '/home/user/.local/bin/yt-dlp https://www.youtube.com/watch?v={video_id} '\
                '{priority_choice}' \
                '-o "{output_dir}/{track_name}.%(ext)s"'
 
