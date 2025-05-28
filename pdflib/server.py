@@ -23,7 +23,7 @@ def handle_client(sock, buff_size, output_dir):
     try:
         data = nm.recv()
         print(f'[*] Received: {data} of length {len(data)} and type {type(data)}')
-        filename = process_query(data['query'], data['add_video'], data['high_quality'], output_dir)
+        filename = process_query(data['query'], output_dir)
         nm.send({'filename': filename, 'filesize': os.path.getsize(f'{output_dir}/{filename}')})
         nm.file_send(f'{output_dir}/{filename}')
     except Exception as e:
