@@ -6,6 +6,9 @@ import subprocess
 import urllib.request, urllib
 import pdfkit
 
+RU_ALPHABET = 'абвгдеёжзийклмнопрстуфхччшщьъыэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЧЧШЩЬЪЫЭЮЯ'
+UA_ALPHABET = 'абвгдеєжзіиїйклмнопрстуфхцчшщьюяАБВГДЕЄЖЗІИЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ'
+
 def process_query(query_txt, output_dir):
     query_lower = str.lower(query_txt)
     output_fname = re.sub(f'[^0-9a-zA-Z'\
